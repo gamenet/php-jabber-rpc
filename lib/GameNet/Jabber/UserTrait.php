@@ -2,7 +2,7 @@
 namespace GameNet\Jabber;
 
 /**
- * Class User
+ * Class UserTrait
  *
  * @category  GGS
  * @package   GameNet\Jabber
@@ -10,8 +10,24 @@ namespace GameNet\Jabber;
  * @author    Vadim Sabirov <vadim.sabirov@syncopate.ru>
  * @version   1.0
  */
-class User extends RpcClient
+trait UserTrait
 {
+    /**
+     * @param string $user
+     * @param string $password
+     */
+    public function createUser($user, $password)
+    {
+        $this->sendRequest(
+            'register',
+            [
+                'host'     => $this->host,
+                'user'     => $user,
+                'password' => $password
+            ]
+        );
+    }
+
     /**
      * @param string $username
      *
@@ -73,15 +89,13 @@ class User extends RpcClient
      */
     public function getLastActivity($username)
     {
-        $result = $this->sendRequest(
+        return $this->sendRequest(
             'get_last',
             [
                 'host' => $this->host,
                 'user' => $username,
             ]
         );
-
-        return $result;
     }
 
     /**
@@ -97,6 +111,20 @@ class User extends RpcClient
                 'from' => $fromJid,
                 'to'   => $toJid,
                 'body' => $message
+            ]
+        );
+    }
+
+    /**
+     * @param string $user
+     */
+    public function deleteUser($user)
+    {
+        $this->sendRequest(
+            'unregister',
+            [
+                'host' => $this->host,
+                'user' => $user,
             ]
         );
     }

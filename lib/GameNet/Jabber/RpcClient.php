@@ -12,6 +12,8 @@ namespace GameNet\Jabber;
  */
 class RpcClient
 {
+    use UserTrait;
+
     protected $server;
     protected $host;
 
