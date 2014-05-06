@@ -15,10 +15,11 @@ trait UserTrait
     /**
      * @param string $user
      * @param string $password
+     * @return bool
      */
     public function createUser($user, $password)
     {
-        $this->sendRequest(
+        $response = $this->sendRequest(
             'register',
             [
                 'host'     => $this->host,
@@ -26,6 +27,8 @@ trait UserTrait
                 'password' => $password
             ]
         );
+
+        return $response['res'] == 0;
     }
 
     /**
@@ -43,11 +46,7 @@ trait UserTrait
             ]
         );
 
-        if (isset($response['res'])) {
-            return true;
-        }
-
-        return false;
+        return $response['res'] == 0;
     }
 
     /**
@@ -85,17 +84,19 @@ trait UserTrait
     /**
      * @param string $username
      *
-     * @return mixed
+     * @return string
      */
     public function getLastActivity($username)
     {
-        return $this->sendRequest(
+        $response = $this->sendRequest(
             'get_last',
             [
                 'host' => $this->host,
                 'user' => $username,
             ]
         );
+
+        return $response['last_activity'];
     }
 
     /**

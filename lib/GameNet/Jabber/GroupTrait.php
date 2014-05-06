@@ -13,17 +13,17 @@ namespace GameNet\Jabber;
 trait GroupTrait
 {
     /**
-     * @param string $group
+     * @param string $groupId
      * @param string $name
      * @param string $description
      */
-    function createGroup($group, $name, $description = '')
+    function createGroup($groupId, $name, $description = '')
     {
         $this->sendRequest(
             'srg_create',
             [
                 'host'        => $this->host,
-                'group'       => $group,
+                'group'       => $groupId,
                 'name'        => $name,
                 'description' => $description,
                 'display'     => 'true'
@@ -32,47 +32,58 @@ trait GroupTrait
     }
 
     /**
-     * @param string $group
+     * @param string $groupId
      */
-    function deleteGroup($group)
+    function deleteGroup($groupId)
     {
         $this->sendRequest(
             'srg_delete',
             [
                 'host'  => $this->host,
-                'group' => $group,
+                'group' => $groupId,
             ]
         );
     }
 
     /**
-     * @param string $group
+     * @param string $groupId
      *
-     * @return mixed
+     * @return array
      */
-    function getGroupMembers($group)
+    function getGroupMembers($groupId)
     {
-        return $this->sendRequest(
+        $response = $this->sendRequest(
             'srg_get_members',
             [
                 'host'  => $this->host,
-                'group' => $group,
+                'group' => $groupId,
             ]
         );
+
+        if (!isset($response['members']) || empty($response['members'])) {
+            return [];
+        }
+
+        $members = [];
+        foreach ($response['members'] as $member) {
+            $members[] = $member['member'];
+        }
+
+        return $members;
     }
 
     /**
      * @param string $user
-     * @param string $group
+     * @param string $groupId
      */
-    function addUserToGroup($user, $group)
+    function addUserToGroup($user, $groupId)
     {
-        $this->sendRequest(
+        return $this->sendRequest(
             'srg_user_add',
             [
                 'user'      => $user,
                 'host'      => $this->host,
-                'group'     => $group,
+                'group'     => $groupId,
                 'grouphost' => $this->host,
             ]
         );
@@ -80,17 +91,55 @@ trait GroupTrait
 
     /**
      * @param string $user
-     * @param string $group
+     * @param string $groupId
      */
-    function removeUserFromGroup($user, $group)
+    function removeUserFromGroup($user, $groupId)
     {
-        $this->sendRequest(
+        return $this->sendRequest(
             'srg_user_del',
             [
                 'user'      => $user,
                 'host'      => $this->host,
-                'group'     => $group,
+                'group'     => $groupId,
                 'grouphost' => $this->host,
+            ]
+        );
+    }
+
+    /**
+     * @return array
+     */
+    function getSharedGroups()
+    {
+        $response = $this->sendRequest(
+            'srg_list',
+            ['host' => $this->host]
+        );
+
+        if (!isset($response['groups']) || empty($response['groups'])) {
+            return [];
+        }
+
+        $sharedGroups = [];
+        foreach ($response['groups'] as $group) {
+            $sharedGroups[] = $group['id'];
+        }
+
+        return $sharedGroups;
+    }
+
+    /**
+     * @param string $groupId
+     *
+     * @return mixed
+     */
+    function getGroupInfo($groupId)
+    {
+        return $this->sendRequest(
+            'srg_get_info',
+            [
+                'group' => $groupId,
+                'host'  => $this->host
             ]
         );
     }

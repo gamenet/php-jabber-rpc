@@ -12,6 +12,11 @@ namespace GameNet\Jabber;
  */
 trait RosterTrait
 {
+    /**
+     * @param string $username
+     *
+     * @return array
+     */
     public function getRosterContacts($username)
     {
         $response = $this->sendRequest(
@@ -22,15 +27,15 @@ trait RosterTrait
             ]
         );
 
+        if (!isset($response['contacts']) || empty($response['contacts'])) {
+            return [];
+        }
+
         $rosterContacts = [];
-        if (isset($response['contacts'])) {
-            foreach ($response['contacts'] as $contact) {
-                if (isset($contact['contact'])) {
-                    foreach ($contact['contact'] as $contactProperty) {
-                        if (isset($contactProperty['jid'])) {
-                            array_push($rosterContacts, $contactProperty['jid']);
-                        }
-                    }
+        foreach ($response['contacts'] as $contact) {
+            foreach ($contact['contact'] as $contactProperty) {
+                if (isset($contactProperty['jid'])) {
+                    $rosterContacts[] = $contactProperty['jid'];
                 }
             }
         }
@@ -38,16 +43,22 @@ trait RosterTrait
         return $rosterContacts;
     }
 
-    public function addRosterContact($username, $contactJid, $group = '')
+    /**
+     * @param string $username
+     * @param string $contact
+     * @param string $nickname
+     * @param string $group
+     */
+    public function addRosterContact($username, $contact, $nickname, $group = '')
     {
-        return $this->sendRequest(
+        $this->sendRequest(
             'add_rosteritem',
             [
                 'localuser'   => $username,
                 'localserver' => $this->host,
-                'user'        => $contactJid,
+                'user'        => $contact,
                 'server'      => $this->host,
-                'nick'        => $contactJid,
+                'nick'        => $nickname,
                 'group'       => $group,
                 'subs'        => 'both',
             ]
@@ -56,16 +67,16 @@ trait RosterTrait
 
     /**
      * @param string $username
-     * @param string $contactJid
+     * @param string $contact
      */
-    public function removeRosterContact($username, $contactJid)
+    public function removeRosterContact($username, $contact)
     {
         $this->sendRequest(
             'delete_rosteritem',
             [
                 'localuser'   => $username,
                 'localserver' => $this->host,
-                'user'        => $contactJid,
+                'user'        => $contact,
                 'server'      => $this->host,
             ]
         );

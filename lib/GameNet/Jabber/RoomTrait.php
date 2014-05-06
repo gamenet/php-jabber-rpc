@@ -17,7 +17,7 @@ trait RoomTrait
      */
     public function createRoom($name)
     {
-        $this->sendRequest(
+        return $this->sendRequest(
             'create_room',
             [
                 'name'    => $name,
@@ -39,6 +39,17 @@ trait RoomTrait
                 'service' => $this->host,
                 'host'    => $this->host,
             ]
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRooms()
+    {
+        return $this->sendRequest(
+            'muc_online_rooms',
+            ['host' => $this->host]
         );
     }
 } 

@@ -13,6 +13,9 @@ namespace GameNet\Jabber;
 class RpcClient
 {
     use UserTrait;
+    use GroupTrait;
+    use RoomTrait;
+    use RosterTrait;
 
     protected $server;
     protected $host;
@@ -34,19 +37,21 @@ class RpcClient
     protected function sendRequest($command, array $params)
     {
         $request = xmlrpc_encode_request($command, $params, ['encoding' => 'utf-8']);
-        $context = stream_context_create(
-            [
-                'http' => [
-                    'method'  => "POST",
-                    'header'  => "User-Agent: XMLRPC::Client mod_xmlrpc\r\n" . "Content-Type: text/xml\r\n",
-                    'content' => $request
-                ]
-            ]
-        );
 
-        $file = file_get_contents($this->server, false, $context);
-        $response = xmlrpc_decode($file);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->server);
+        curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['User-Agent: XMLRPC::Client mod_xmlrpc', 'Content-Type: text/xml']);
+        $response = curl_exec($ch);
+        curl_close($ch);
 
+        $response = xmlrpc_decode($response);
         if (xmlrpc_is_fault($response)) {
             throw new \RuntimeException("Error execution command $command with parameters " . var_export($params, true));
         }
