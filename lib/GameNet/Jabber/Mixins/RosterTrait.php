@@ -1,5 +1,5 @@
 <?php
-namespace GameNet\Jabber;
+namespace GameNet\Jabber\Mixins;
 
 /**
  * Class RosterTrait
@@ -32,12 +32,14 @@ trait RosterTrait
         }
 
         $rosterContacts = [];
-        foreach ($response['contacts'] as $contact) {
-            foreach ($contact['contact'] as $contactProperty) {
-                if (isset($contactProperty['jid'])) {
-                    $rosterContacts[] = $contactProperty['jid'];
+        foreach ($response['contacts'] as $item) {
+            $contact = [];
+            foreach ($item['contact'] as $data) {
+                foreach ($data as $key => $value) {
+                    $contact[$key] = $value;
                 }
             }
+            $rosterContacts[] = $contact;
         }
 
         return $rosterContacts;
@@ -48,8 +50,9 @@ trait RosterTrait
      * @param string $contact
      * @param string $nickname
      * @param string $group
+     * @param string $subs Available: none, from, to or both
      */
-    public function addRosterContact($username, $contact, $nickname, $group = '')
+    public function addRosterContact($username, $contact, $nickname, $group = '', $subs = 'both')
     {
         $this->sendRequest(
             'add_rosteritem',
@@ -60,7 +63,7 @@ trait RosterTrait
                 'server'      => $this->host,
                 'nick'        => $nickname,
                 'group'       => $group,
-                'subs'        => 'both',
+                'subs'        => $subs,
             ]
         );
     }

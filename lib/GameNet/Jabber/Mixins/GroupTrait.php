@@ -1,5 +1,5 @@
 <?php
-namespace GameNet\Jabber;
+namespace GameNet\Jabber\Mixins;
 
 /**
  * Class GroupTrait
@@ -23,10 +23,9 @@ trait GroupTrait
             'srg_create',
             [
                 'host'        => $this->host,
-                'group'       => $groupId,
+                'group'       => (string) $groupId,
                 'name'        => $name,
                 'description' => $description,
-                'display'     => 'true'
             ]
         );
     }
@@ -126,21 +125,5 @@ trait GroupTrait
         }
 
         return $sharedGroups;
-    }
-
-    /**
-     * @param string $groupId
-     *
-     * @return mixed
-     */
-    function getGroupInfo($groupId)
-    {
-        return $this->sendRequest(
-            'srg_get_info',
-            [
-                'group' => $groupId,
-                'host'  => $this->host
-            ]
-        );
     }
 } 

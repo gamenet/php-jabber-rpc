@@ -12,10 +12,19 @@ namespace GameNet\Jabber;
  */
 class RpcClient
 {
-    use UserTrait;
-    use GroupTrait;
-    use RoomTrait;
-    use RosterTrait;
+    use Mixins\UserTrait;
+    use Mixins\GroupTrait;
+    use Mixins\RoomTrait;
+    use Mixins\RosterTrait;
+
+    const VCARD_FULLNAME = 'FN';
+    const VCARD_NICKNAME = 'NICKNAME';
+    const VCARD_BIRTHDAY = 'BDAY';
+    const VCARD_EMAIL = 'EMAIL USERID';
+    const VCARD_COUNTRY = 'ADR CTRY';
+    const VCARD_CITY = 'ADR LOCALITY';
+    const VCARD_DESCRIPTION = 'DESC';
+    const VCARD_AVATAR_URL = 'PHOTO_URL';
 
     protected $server;
     protected $host;
@@ -32,6 +41,7 @@ class RpcClient
 
         $this->server = $options['server'];
         $this->host = $options['host'];
+        $this->debug = isset($options['debug']) ? (bool)$options['debug'] : false;
     }
 
     protected function sendRequest($command, array $params)
@@ -47,16 +57,20 @@ class RpcClient
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['User-Agent: XMLRPC::Client mod_xmlrpc', 'Content-Type: text/xml']);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['User-Agent: GameNet', 'Content-Type: text/xml']);
         $response = curl_exec($ch);
         curl_close($ch);
 
-        $response = xmlrpc_decode($response);
-        if (xmlrpc_is_fault($response)) {
-            throw new \RuntimeException("Error execution command $command with parameters " . var_export($params, true));
+        $xml = xmlrpc_decode($response);
+        if (!$xml || xmlrpc_is_fault($xml)) {
+            throw new \RuntimeException("Error execution command '$command'' with parameters " . var_export($params, true) . ". Response: $response");
         }
 
-        return $response;
+        if ($this->debug) {
+            var_dump($command, $params, $response);
+        }
+
+        return $xml;
     }
 }
  
