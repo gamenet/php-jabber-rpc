@@ -133,29 +133,22 @@ trait UserTrait
     }
 
     /**
-     * UNDONE: After executing status does not change. Requires additional research
-     *
      * @param string $user
-     * @param string $resource
-     * @param string $type Valid values: unavailable, subscribe, subscribed, unsubscribe, unsubscribed, probe, error
      * @param string $show Valid values are: away, chat, dnd, xa
      * @param string $status Text message
      * @param int $priority The value MUST be an integer between -128 and +127
      */
-    public function setPresence($user, $resource, $type, $show, $status, $priority)
+    public function setStatus($user, $show, $status, $priority)
     {
-        $this->sendRequest(
-            'set_presence',
-            [
-                'host' => $this->host,
-                'resource' => $resource,
-                'type' => $type,
-                'user' => $user,
-                'show' => (string)$show,
-                'status' => (string)$status,
-                'priority' => (string)$priority,
-            ]
-        );
+        $priority = (string) $priority;
+        $stanza = "
+            <presence>
+                <show>$show</show>
+                <status>$status</status>
+                <priority>$priority</priority>
+            </presence>";
+
+        $this->sendStanza($user, $stanza);
     }
 
     public function getUserSessions($user)
@@ -269,6 +262,45 @@ trait UserTrait
                 'reason' => $reason,
             ]
         );
+    }
+
+    public function sendStanza($user, $stanza)
+    {
+        $sessions = $this->getUserSessions($user);
+        foreach ($sessions as $session) {
+            $this->sendRequest(
+                'send_stanza_c2s',
+                [
+                    'host' => $this->host,
+                    'user' => $user,
+                    'resource' => $session['resource'],
+                    'stanza' => $stanza,
+                ]
+            );
+        }
+    }
+
+    /**
+     * @param string $user
+     * @param string $contact
+     * @param array $groups
+     */
+    public function setRosterUserGroup($user, $contact, array $groups)
+    {
+        $jid = "$contact@$this->host";
+        $group = '';
+        foreach ($groups as $group) {
+            $group .= "<group>$group</group>";
+        }
+
+        $stanza = "
+            <iq type=\"set\" id=\"ab48a\">
+                <query xmlns=\"jabber:iq:roster\">
+                    <item jid=\"$jid\">$group</item>
+                </query>
+            </iq>";
+
+        $this->sendStanza($user, $stanza);
     }
 }
  

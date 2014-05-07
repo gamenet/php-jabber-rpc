@@ -84,13 +84,12 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->deleteUser('user');
     }
 
-    public function testSetPresence()
+    public function testSetStatus()
     {
         $this->mock->expects($this->once())
-            ->method('sendRequest')
-            ->with($this->equalTo('set_presence'));
+            ->method('sendRequest');
 
-        $this->mock->setPresence('user', 'resource', 'type', 'show', 'status', 'priority');
+        $this->mock->setStatus('user', 'show', 'status', 'priority');
     }
 
     public function testGetUserSessions()
@@ -145,6 +144,22 @@ class UserTest extends  PHPUnit_Framework_TestCase
             ->with($this->equalTo('ban_account'));
 
         $this->mock->banAccount('user', 'reason');
+    }
+
+    public function testSetRosterUserGroup()
+    {
+        $this->mock->expects($this->once())
+            ->method('sendRequest');
+
+        $this->mock->setRosterUserGroup('user', 'contact', ['group']);
+    }
+
+    public function testSendStanza()
+    {
+        $this->mock->expects($this->once())
+            ->method('sendRequest');
+
+        $this->mock->sendStanza('user', 'stanza');
     }
 }
  
