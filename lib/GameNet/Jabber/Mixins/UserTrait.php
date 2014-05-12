@@ -43,8 +43,11 @@ namespace GameNet\Jabber\Mixins;
 trait UserTrait
 {
     /**
+     * Create an ejabberd user account.
+     *
      * @param string $user
      * @param string $password
+     *
      * @return bool
      */
     public function createUser($user, $password)
@@ -62,6 +65,8 @@ trait UserTrait
     }
 
     /**
+     * Check if ejabberd user account already exists.
+     *
      * @param string $user
      *
      * @return bool
@@ -80,6 +85,8 @@ trait UserTrait
     }
 
     /**
+     * Change the password on behalf of the given user.
+     *
      * @param string $user
      * @param string $password
      */
@@ -96,6 +103,10 @@ trait UserTrait
     }
 
     /**
+     * Define user nickname.
+     *
+     * The nickname is set/updated in the user Vcard. Other informations are unchanged.
+     *
      * @param string $user
      * @param string $nickname
      */
@@ -130,6 +141,8 @@ trait UserTrait
     }
 
     /**
+     * Send normal message to a given user.
+     *
      * @param string $fromJid
      * @param string $toJid
      * @param string $message
@@ -147,6 +160,9 @@ trait UserTrait
     }
 
     /**
+     * Unregister an ejabberd user account. This mechanism should only be used for server administration or server
+     * integration purpose.
+     *
      * @param string $user
      */
     public function deleteUser($user)
@@ -336,4 +352,3 @@ trait UserTrait
         $this->sendStanza($user, $stanza);
     }
 }
- 

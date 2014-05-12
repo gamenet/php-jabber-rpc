@@ -56,6 +56,7 @@ class RpcClient
     const VCARD_AVATAR_URL = 'PHOTO_URL';
 
     protected $server;
+
     protected $host;
 
     public function __construct(array $options)

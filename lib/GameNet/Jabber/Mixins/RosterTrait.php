@@ -42,6 +42,10 @@ namespace GameNet\Jabber\Mixins;
 trait RosterTrait
 {
     /**
+     * Retrieve the roster for a given user. Returns a list of the contacts in a user roster. It also returns the state
+     * of the contact subscription. Subscription can be either "none", "from", "to", "both". Pending can be "in", "out"
+     * or "none".
+     *
      * @param string $user
      *
      * @return array [['jid', 'nick', 'subscription', 'ask', 'group'], [], ...]
@@ -75,6 +79,16 @@ trait RosterTrait
     }
 
     /**
+     * Add an entry in a user's roster.
+     *
+     * Subs is the state of the roster item subscription. It can be either `both`, `to`, `from` or `none`. `None` means
+     * that presence packets are not send between parties. `Both` means that presence packets are send in both direction.
+     * `To` means that the user see the presence of the given JID. `From` means that the JID specified sees the user
+     * presence.
+     *
+     * Do not forget that roster items should be kept symmetric: when adding a roster item for a user, you have to do
+     * the symmetric roster item addition.
+     *
      * @param string $user
      * @param string $contact
      * @param string $nickname
@@ -98,6 +112,12 @@ trait RosterTrait
     }
 
     /**
+     * Remove an entry for a user roster.
+     *
+     * Do not forget that roster items should be kept symmetric: when removing a roster item for a user, you have to do
+     * the symmetric roster item removal. This mechanism bypass the standard roster approval addition mechanism and
+     * should only be used for server administration or server integration purpose.
+     *
      * @param string $user
      * @param string $contact
      */
