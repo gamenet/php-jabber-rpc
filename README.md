@@ -20,5 +20,43 @@ One example usage is a corporate site in PHP that creates a Jabber user every ti
  * external programs are more simple and easy to develop and debug
  * can communicate with a server in a different machine, and even on Internet
 
-This library is an simple wrapper above php xmlrpc module to simplify ejabberd mod_xmlrpc usage from php.
+This library is an simple wrapper above php xmlrpc module to simplify ejabberd mod_xmlrpc usage from php. PHP code based
+on [mod_admin_extra.erl](https://github.com/processone/ejabberd-contrib/blob/master/mod_admin_extra/src/mod_admin_extra.erl)
+and [mod_muc_admin.erl](https://github.com/processone/ejabberd-contrib/blob/master/mod_muc_admin/src/mod_muc_admin.erl)
+ source files.
 
+## Requirements ##
+
+    PHP >= 5.4
+
+## Installation ##
+
+### Composer ###
+The recommended way to install library is [composer](http://getcomposer.org).
+You can see [package information on Packagist](https://packagist.org/packages/gamenet/php-jabber-rpc).
+
+```JSON
+{
+	"require": {
+		"gamenet/php-jabber-rpc": "*"
+	}
+}
+```
+
+### Do not use composer? ###
+Just clone the repository and take care about autoload for namespace `GameNet`.
+
+# Usage #
+
+Basic usage looks like this:
+
+```php
+    $rpc = new \GameNet\Jabber\RpcClient([
+        'server' => 'http://127.0.0.1:4560,
+        'host' => 'j.gamenet.ru',
+        'debug' => false,
+    ]);
+
+    //Create new user with name `Ivan` and password `someStrongPassword`
+    $rpc->createUser('Ivan', 'someStrongPassword');
+```
