@@ -20,31 +20,31 @@ class RosterTest extends  PHPUnit_Framework_TestCase
             ->getMock();
     }
 
-    public function testGetRosterContacts()
+    public function testGetRoster()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
             ->with($this->equalTo('get_roster'));
 
-        $this->mock->getRosterContacts('user');
+        $this->mock->getRoster('user');
     }
 
-    public function testAddRosterContact()
+    public function testAddRosterItem()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
             ->with($this->equalTo('add_rosteritem'));
 
-        $this->mock->addRosterContact('user', 'contact', 'nickname');
+        $this->mock->addRosterItem('user', 'contact', 'nickname');
     }
 
-    public function testRemoveRosterContact()
+    public function testRemoveRosterItem()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
             ->with($this->equalTo('delete_rosteritem'));
 
-        $this->mock->removeRosterContact('user', 'contact');
+        $this->mock->deleteRosterItem('user', 'contact');
     }
 }
  

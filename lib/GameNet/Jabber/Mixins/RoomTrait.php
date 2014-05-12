@@ -42,6 +42,8 @@ namespace GameNet\Jabber\Mixins;
 trait RoomTrait
 {
     /**
+     * Create a MUC room name@service in host.
+     *
      * @param string $name
      */
     public function createRoom($name)
@@ -57,12 +59,16 @@ trait RoomTrait
     }
 
     /**
-     * @param string $name
-     * @param string $password
-     * @param string $reason
-     * @param array  $users Users JIDs
+     * Send a direct invitation to several destinations.
+     *
+     * Password and Message can also be: none. Users JIDs are separated with `:`
+     *
+     * @param string $name The room name.
+     * @param string $password The room password.
+     * @param string $reason The invitation text which be sent to users.
+     * @param array  $users The users JIDs invited to room.
      */
-    public function sendInviteToRoom($name, $password, $reason, array $users)
+    public function inviteToRoom($name, $password, $reason, array $users)
     {
         $this->sendRequest(
             'send_direct_invitation',
@@ -76,7 +82,9 @@ trait RoomTrait
     }
 
     /**
-     * @param string $name
+     * Delete a MUC room.
+     *
+     * @param string $name The room name.
      */
     public function deleteRoom($name)
     {
@@ -91,9 +99,11 @@ trait RoomTrait
     }
 
     /**
-     * @return array ['room1@conference.j.test.dev', 'room2@conference.j.test.dev', ...]
+     * List existing rooms.
+     *
+     * @return array Return array like ['room1@conference.j.test.dev', 'room2@conference.j.test.dev', ...]
      */
-    public function getRooms()
+    public function getOnlineRooms()
     {
         $rooms = $this->sendRequest(
             'muc_online_rooms',
@@ -113,7 +123,9 @@ trait RoomTrait
     }
 
     /**
-     * @param string $name
+     * Change an option in a MUC room.
+     *
+     * @param string $name The room name
      * @param string $option Valid values:
      *                       title (string)
      *                       password (string)
@@ -149,7 +161,9 @@ trait RoomTrait
     }
 
     /**
-     * @param string $name
+     * Change an affiliation in a MUC room.
+     *
+     * @param string $name The room name.
      * @param string $userJid
      * @param string $affiliation Valid values: outcast, none, member, admin, owner
      *                            If the affiliation is 'none', the action is to remove
@@ -166,4 +180,4 @@ trait RoomTrait
             ]
         );
     }
-} 
+}

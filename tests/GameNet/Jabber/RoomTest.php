@@ -29,13 +29,13 @@ class RoomTest extends  PHPUnit_Framework_TestCase
         $this->mock->createRoom('name');
     }
 
-    public function testSendInviteToRoom()
+    public function testInviteToRoom()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
             ->with($this->equalTo('send_direct_invitation'));
 
-        $this->mock->sendInviteToRoom('name', 'password', 'reason', ['contact']);
+        $this->mock->inviteToRoom('name', 'password', 'reason', ['contact']);
     }
 
     public function testDeleteRoom()
@@ -47,13 +47,13 @@ class RoomTest extends  PHPUnit_Framework_TestCase
         $this->mock->deleteRoom('name');
     }
 
-    public function testGetRooms()
+    public function testGetOnlineRooms()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
             ->with($this->equalTo('muc_online_rooms'));
 
-        $this->mock->getRooms('name');
+        $this->mock->getOnlineRooms('name');
     }
 
     public function testSetRoomOption()
