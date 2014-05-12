@@ -1,5 +1,5 @@
 {
-    "name": "gamenet/jabber",
+    "name": "gamenet/php-jabber-rpc",
     "type": "library",
     "description": "PHP wrapper for ejabberd xml-rpc module",
     "keywords": ["xmpp", "jabber", "ejabberd", "xml-rpc", "xml", "rpc", "wrapper"],
