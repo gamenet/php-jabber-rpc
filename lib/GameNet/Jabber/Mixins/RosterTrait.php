@@ -50,7 +50,7 @@ trait RosterTrait
      *
      * @return array [['jid', 'nick', 'subscription', 'ask', 'group'], [], ...]
      */
-    public function getRosterContacts($user)
+    public function getRoster($user)
     {
         $response = $this->sendRequest(
             'get_roster',
@@ -95,7 +95,7 @@ trait RosterTrait
      * @param string $group
      * @param string $subs Available: none, from, to or both
      */
-    public function addRosterContact($user, $contact, $nickname, $group = '', $subs = 'both')
+    public function addRosterItem($user, $contact, $nickname, $group = '', $subs = 'both')
     {
         $this->sendRequest(
             'add_rosteritem',
@@ -118,17 +118,18 @@ trait RosterTrait
      * the symmetric roster item removal. This mechanism bypass the standard roster approval addition mechanism and
      * should only be used for server administration or server integration purpose.
      *
-     * @param string $user
-     * @param string $contact
+     * @param string $localUser The roster owner.
+     * @param string $localUser The roster owner.
+     * @param string $user Roster user item which would be deleted.
      */
-    public function removeRosterContact($user, $contact)
+    public function deleteRosterItem($localUser, $user)
     {
         $this->sendRequest(
             'delete_rosteritem',
             [
-                'localuser'   => $user,
+                'localuser'   => $localUser,
                 'localserver' => $this->host,
-                'user'        => $contact,
+                'user'        => $user,
                 'server'      => $this->host,
             ]
         );
