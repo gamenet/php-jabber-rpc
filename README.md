@@ -52,7 +52,7 @@ Basic usage looks like this:
 
 ```php
     $rpc = new \GameNet\Jabber\RpcClient([
-        'server' => 'http://127.0.0.1:4560,
+        'server' => 'http://127.0.0.1:4560',
         'host' => 'j.gamenet.ru',
         'debug' => false,
     ]);
