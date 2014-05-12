@@ -1,5 +1,5 @@
 filter:
-    paths: [src/*]
+    paths: [lib/*]
     excluded_paths: [vendor/*, tests/*]
 
 before_commands:
