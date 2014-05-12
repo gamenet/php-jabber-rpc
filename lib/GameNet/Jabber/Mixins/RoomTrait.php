@@ -62,14 +62,25 @@ trait RoomTrait
     }
 
     /**
-     * @return mixed
+     * @return array ['room1@conference.j.test.dev', 'room2@conference.j.test.dev', ...]
      */
     public function getRooms()
     {
-        return $this->sendRequest(
+        $rooms = $this->sendRequest(
             'muc_online_rooms',
             ['host' => $this->host]
         );
+
+        if (!isset($rooms['rooms']) || empty($rooms['rooms'])) {
+            return [];
+        }
+
+        $roomList = [];
+        foreach ($rooms['rooms'] as $item) {
+            $roomList[] = $item['room'];
+        }
+
+        return $roomList;
     }
 
     /**

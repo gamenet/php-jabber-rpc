@@ -47,7 +47,7 @@ trait GroupTrait
     /**
      * @param string $groupId
      *
-     * @return array
+     * @return array ['jid1', 'jid2', ...]
      */
     function getGroupMembers($groupId)
     {
@@ -106,7 +106,7 @@ trait GroupTrait
     }
 
     /**
-     * @return array
+     * @return array ['group1', 'group2', ...]
      */
     function getSharedGroups()
     {

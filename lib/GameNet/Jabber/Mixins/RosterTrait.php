@@ -13,16 +13,16 @@ namespace GameNet\Jabber\Mixins;
 trait RosterTrait
 {
     /**
-     * @param string $username
+     * @param string $user
      *
-     * @return array
+     * @return array [['jid', 'nick', 'subscription', 'ask', 'group'], [], ...]
      */
-    public function getRosterContacts($username)
+    public function getRosterContacts($user)
     {
         $response = $this->sendRequest(
             'get_roster',
             [
-                'user' => $username,
+                'user' => $user,
                 'host' => $this->host,
             ]
         );
@@ -46,18 +46,18 @@ trait RosterTrait
     }
 
     /**
-     * @param string $username
+     * @param string $user
      * @param string $contact
      * @param string $nickname
      * @param string $group
      * @param string $subs Available: none, from, to or both
      */
-    public function addRosterContact($username, $contact, $nickname, $group = '', $subs = 'both')
+    public function addRosterContact($user, $contact, $nickname, $group = '', $subs = 'both')
     {
         $this->sendRequest(
             'add_rosteritem',
             [
-                'localuser'   => $username,
+                'localuser'   => $user,
                 'localserver' => $this->host,
                 'user'        => $contact,
                 'server'      => $this->host,
@@ -69,15 +69,15 @@ trait RosterTrait
     }
 
     /**
-     * @param string $username
+     * @param string $user
      * @param string $contact
      */
-    public function removeRosterContact($username, $contact)
+    public function removeRosterContact($user, $contact)
     {
         $this->sendRequest(
             'delete_rosteritem',
             [
-                'localuser'   => $username,
+                'localuser'   => $user,
                 'localserver' => $this->host,
                 'user'        => $contact,
                 'server'      => $this->host,

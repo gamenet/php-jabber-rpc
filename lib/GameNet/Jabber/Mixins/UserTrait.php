@@ -34,16 +34,16 @@ trait UserTrait
     }
 
     /**
-     * @param string $username
+     * @param string $user
      *
      * @return bool
      */
-    public function isExist($username)
+    public function isExist($user)
     {
         $response = $this->sendRequest(
             'check_account',
             [
-                'user' => $username,
+                'user' => $user,
                 'host' => $this->host
             ]
         );
@@ -52,49 +52,49 @@ trait UserTrait
     }
 
     /**
-     * @param string $username
+     * @param string $user
      * @param string $password
      */
-    public function setPassword($username, $password)
+    public function setPassword($user, $password)
     {
         $this->sendRequest(
             'change_password',
             [
                 'host'    => $this->host,
-                'user'    => $username,
+                'user'    => $user,
                 'newpass' => $password
             ]
         );
     }
 
     /**
-     * @param string $username
+     * @param string $user
      * @param string $nickname
      */
-    public function setVcardNickname($username, $nickname)
+    public function setVcardNickname($user, $nickname)
     {
         $this->sendRequest(
             'set_nickname',
             [
                 'host'     => $this->host,
-                'user'     => $username,
+                'user'     => $user,
                 'nickname' => $nickname
             ]
         );
     }
 
     /**
-     * @param string $username
+     * @param string $user
      *
      * @return string
      */
-    public function getLastActivity($username)
+    public function getLastActivity($user)
     {
         $response = $this->sendRequest(
             'get_last',
             [
                 'host' => $this->host,
-                'user' => $username,
+                'user' => $user,
             ]
         );
 
@@ -151,6 +151,11 @@ trait UserTrait
         $this->sendStanza($user, $stanza);
     }
 
+    /**
+     * @param string $user
+     *
+     * @return array [['connection', 'ip', 'port', 'priority', 'node', 'uptime', 'status', 'resource', 'statustext'], [], ...]
+     */
     public function getUserSessions($user)
     {
         $response = $this->sendRequest(
