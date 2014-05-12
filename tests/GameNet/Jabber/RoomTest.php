@@ -3,9 +3,8 @@
 /**
  * Class RoomTest
  *
- * @category GGS 
  * @package tests\GameNet\Jabber
- * @copyright Copyright (с), Syncopate Limited and/or affiliates. All rights reserved.
+ * @copyright Copyright (с) 2015, GameNet. All rights reserved.
  * @author Vadim Sabirov <vadim.sabirov@syncopate.ru>
  * @version 1.0
  */
