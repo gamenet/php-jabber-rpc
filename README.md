@@ -59,4 +59,12 @@ Basic usage looks like this:
 
     //Create new user with name `Ivan` and password `someStrongPassword`
     $rpc->createUser('Ivan', 'someStrongPassword');
+    $rpc->createUser('Petr', 'someStrongPassword');
+
+    // Add each other in the contact list with group 'Friend'
+    $rpc->addRosterItem('Ivan', 'Petr', 'Petr Ivanov', 'Friend');
+    $rpc->addRosterItem('Petr', 'Ivan', 'Ivan Petrov', 'Friend');
+
+    // Get contact list Ivan
+    $contacts = $rpc->getRoster($username);
 ```

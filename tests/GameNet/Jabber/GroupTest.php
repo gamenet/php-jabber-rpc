@@ -25,7 +25,7 @@ class GroupTest extends  PHPUnit_Framework_TestCase
             ->method('sendRequest')
             ->with($this->equalTo('srg_create'));
 
-        $this->mock->createGroup('groupId', 'name', 'description');
+        $this->mock->createSharedRosterGroup('groupId', 'name', 'description');
     }
 
     public function testDeleteGroup()
@@ -34,7 +34,7 @@ class GroupTest extends  PHPUnit_Framework_TestCase
             ->method('sendRequest')
             ->with($this->equalTo('srg_delete'));
 
-        $this->mock->deleteGroup('groupId');
+        $this->mock->deleteSharedRosterGroup('groupId');
     }
 
     public function testGetGroupMembers()
@@ -43,7 +43,7 @@ class GroupTest extends  PHPUnit_Framework_TestCase
             ->method('sendRequest')
             ->with($this->equalTo('srg_get_members'));
 
-        $this->mock->getGroupMembers('groupId');
+        $this->mock->getMembersSharedRosterGroup('groupId');
     }
 
     public function testAddUserToGroup()
@@ -52,7 +52,7 @@ class GroupTest extends  PHPUnit_Framework_TestCase
             ->method('sendRequest')
             ->with($this->equalTo('srg_user_add'));
 
-        $this->mock->addUserToGroup('groupId', 'name');
+        $this->mock->addUserToSharedRosterGroup('groupId', 'name');
     }
 
     public function testRemoveUserFromGroup()
@@ -61,7 +61,7 @@ class GroupTest extends  PHPUnit_Framework_TestCase
             ->method('sendRequest')
             ->with($this->equalTo('srg_user_del'));
 
-        $this->mock->removeUserFromGroup('groupId', 'name');
+        $this->mock->deleteUserSharedRosterGroup('groupId', 'name');
     }
 
     public function testGetSharedGroups()
@@ -70,7 +70,7 @@ class GroupTest extends  PHPUnit_Framework_TestCase
             ->method('sendRequest')
             ->with($this->equalTo('srg_list'));
 
-        $this->mock->getSharedGroups();
+        $this->mock->listSharedRosterGroups();
     }
 }
  

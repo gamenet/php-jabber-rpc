@@ -42,11 +42,13 @@ namespace GameNet\Jabber\Mixins;
 trait GroupTrait
 {
     /**
+     * Create a Shared Roster Group.
+     *
      * @param string $groupId
      * @param string $name
      * @param string $description
      */
-    function createGroup($groupId, $name, $description = '')
+    function createSharedRosterGroup($groupId, $name, $description = '')
     {
         $this->sendRequest(
             'srg_create',
@@ -60,9 +62,11 @@ trait GroupTrait
     }
 
     /**
+     * Delete a Shared Roster Group
+     *
      * @param string $groupId
      */
-    function deleteGroup($groupId)
+    function deleteSharedRosterGroup($groupId)
     {
         $this->sendRequest(
             'srg_delete',
@@ -74,11 +78,13 @@ trait GroupTrait
     }
 
     /**
+     * Get members of a Shared Roster Group
+     *
      * @param string $groupId
      *
      * @return array ['jid1', 'jid2', ...]
      */
-    function getGroupMembers($groupId)
+    function getMembersSharedRosterGroup($groupId)
     {
         $response = $this->sendRequest(
             'srg_get_members',
@@ -101,10 +107,12 @@ trait GroupTrait
     }
 
     /**
+     * Add the JID user@host to the Shared Roster Group
+     *
      * @param string $user
      * @param string $groupId
      */
-    function addUserToGroup($user, $groupId)
+    function addUserToSharedRosterGroup($user, $groupId)
     {
         return $this->sendRequest(
             'srg_user_add',
@@ -118,10 +126,12 @@ trait GroupTrait
     }
 
     /**
+     * Delete this JID user@host from the Shared Roster Group
+     *
      * @param string $user
      * @param string $groupId
      */
-    function removeUserFromGroup($user, $groupId)
+    function deleteUserSharedRosterGroup($user, $groupId)
     {
         return $this->sendRequest(
             'srg_user_del',
@@ -135,9 +145,11 @@ trait GroupTrait
     }
 
     /**
+     * List the Shared Roster Groups in Host
+     *
      * @return array ['group1', 'group2', ...]
      */
-    function getSharedGroups()
+    function listSharedRosterGroups()
     {
         $response = $this->sendRequest(
             'srg_list',

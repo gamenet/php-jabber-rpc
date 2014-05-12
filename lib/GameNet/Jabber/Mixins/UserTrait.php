@@ -48,7 +48,7 @@ trait UserTrait
      * @param string $user
      * @param string $password
      *
-     * @return bool
+     * @throws \RuntimeException
      */
     public function createUser($user, $password)
     {
@@ -61,7 +61,9 @@ trait UserTrait
             ]
         );
 
-        return $response['res'] == 0;
+        if ($response['res'] != 0) {
+            throw new \RuntimeException('Unable create user');
+        }
     }
 
     /**
@@ -71,7 +73,7 @@ trait UserTrait
      *
      * @return bool
      */
-    public function isExist($user)
+    public function checkAccount($user)
     {
         $response = $this->sendRequest(
             'check_account',
@@ -90,7 +92,7 @@ trait UserTrait
      * @param string $user
      * @param string $password
      */
-    public function setPassword($user, $password)
+    public function changePassword($user, $password)
     {
         $this->sendRequest(
             'change_password',
@@ -110,7 +112,7 @@ trait UserTrait
      * @param string $user
      * @param string $nickname
      */
-    public function setVcardNickname($user, $nickname)
+    public function setNickname($user, $nickname)
     {
         $this->sendRequest(
             'set_nickname',
@@ -123,6 +125,10 @@ trait UserTrait
     }
 
     /**
+     * Get last activity information
+     *
+     * Timestamp is the seconds since 1970-01-01 00:00:00 UTC, for example: date +%s
+     *
      * @param string $user
      *
      * @return string
@@ -141,13 +147,13 @@ trait UserTrait
     }
 
     /**
-     * Send normal message to a given user.
+     * Send a chat message to a local or remote bare of full JID
      *
      * @param string $fromJid
      * @param string $toJid
      * @param string $message
      */
-    public function sendMessage($fromJid, $toJid, $message)
+    public function sendMessageChat($fromJid, $toJid, $message)
     {
         $this->sendRequest(
             'send_message_chat',
@@ -165,7 +171,7 @@ trait UserTrait
      *
      * @param string $user
      */
-    public function deleteUser($user)
+    public function unregisterUser($user)
     {
         $this->sendRequest(
             'unregister',
@@ -177,6 +183,8 @@ trait UserTrait
     }
 
     /**
+     * Set user status with message
+     *
      * @param string $user
      * @param string $show Valid values are: away, chat, dnd, xa
      * @param string $status Text message
@@ -192,15 +200,17 @@ trait UserTrait
                 <priority>$priority</priority>
             </presence>";
 
-        $this->sendStanza($user, $stanza);
+        $this->sendStanzaC2S($user, $stanza);
     }
 
     /**
+     * Get information about all sessions of a user
+     *
      * @param string $user
      *
      * @return array [['connection', 'ip', 'port', 'priority', 'node', 'uptime', 'status', 'resource', 'statustext'], [], ...]
      */
-    public function getUserSessions($user)
+    public function userSessionsInfo($user)
     {
         $response = $this->sendRequest(
             'user_sessions_info',
@@ -229,12 +239,14 @@ trait UserTrait
     }
 
     /**
+     * Get content from a vCard field
+     *
      * @param string $user
      * @param string $name
      *
      * @return string
      */
-    public function getVcardField($user, $name)
+    public function getVCard($user, $name)
     {
         if (strstr($name, ' ')) {
             $command = 'get_vcard2';
@@ -265,11 +277,13 @@ trait UserTrait
     }
 
     /**
+     * Set content in a vCard field
+     *
      * @param string $user
      * @param string $name
      * @param string $value
      */
-    public function setVcardField($user, $name, $value)
+    public function setVCard($user, $name, $value)
     {
         if (strstr($name, ' ')) {
             $command = 'set_vcard2';
@@ -296,7 +310,7 @@ trait UserTrait
     }
 
     /**
-     * This method destroy session and set random password
+     * Ban an account: kick sessions and set random password
      *
      * @param string $user
      * @param string $reason
@@ -313,9 +327,15 @@ trait UserTrait
         );
     }
 
-    public function sendStanza($user, $stanza)
+    /**
+     * Send a stanza as if sent from a c2s session
+     *
+     * @param string $user
+     * @param string $stanza XML string
+     */
+    public function sendStanzaC2S($user, $stanza)
     {
-        $sessions = $this->getUserSessions($user);
+        $sessions = $this->userSessionsInfo($user);
         foreach ($sessions as $session) {
             $this->sendRequest(
                 'send_stanza_c2s',
@@ -330,6 +350,7 @@ trait UserTrait
     }
 
     /**
+     * Set roster user owner
      * @param string $user
      * @param string $contact
      * @param array $groups
@@ -349,6 +370,6 @@ trait UserTrait
                 </query>
             </iq>";
 
-        $this->sendStanza($user, $stanza);
+        $this->sendStanzaC2S($user, $stanza);
     }
 }

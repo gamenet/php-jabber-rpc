@@ -53,7 +53,7 @@ class RpcClient
     const VCARD_COUNTRY = 'ADR CTRY';
     const VCARD_CITY = 'ADR LOCALITY';
     const VCARD_DESCRIPTION = 'DESC';
-    const VCARD_AVATAR_URL = 'PHOTO_URL';
+    const VCARD_AVATAR_URL = 'EXTRA PHOTOURL';
 
     protected $server;
 
