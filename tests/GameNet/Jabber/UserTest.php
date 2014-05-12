@@ -29,7 +29,7 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->createUser('user', 'password');
     }
 
-    public function testIsExist()
+    public function testCheckAccount()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
@@ -38,7 +38,7 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->checkAccount('user');
     }
 
-    public function testSetPassword()
+    public function testChangePassword()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
@@ -47,7 +47,7 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->changePassword('user', 'password');
     }
 
-    public function testSetVcardNickname()
+    public function testSetNickname()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
@@ -65,7 +65,7 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->getLastActivity('user');
     }
 
-    public function testSendMessage()
+    public function testSendMessageChat()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
@@ -74,7 +74,7 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->sendMessageChat('from', 'to', 'body');
     }
 
-    public function testDeleteUser()
+    public function testUnregisterUser()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
@@ -91,7 +91,7 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->setStatus('user', 'show', 'status', 'priority');
     }
 
-    public function testGetUserSessions()
+    public function testUserSessionsInfo()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
@@ -100,7 +100,7 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->userSessionsInfo('user');
     }
 
-    public function testGetVcardFieldSimple()
+    public function testGetVCard()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
@@ -109,7 +109,7 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->getVCard('user', 'name');
     }
 
-    public function testGetVcardFieldExtra()
+    public function testGetVCardExtra()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
@@ -118,7 +118,7 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->getVCard('user', 'extra name');
     }
 
-    public function testSetVcardFieldSimple()
+    public function testSetVCard()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
@@ -127,7 +127,7 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->setVCard('user', 'name', 'value');
     }
 
-    public function testSetVcardFieldExtra()
+    public function testSetVCardExtra()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest')
@@ -145,12 +145,12 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->banAccount('user', 'reason');
     }
 
-    public function testSetRosterUserGroup()
+    public function testSetGroupForUserRoster()
     {
         $this->mock->expects($this->once())
             ->method('sendRequest');
 
-        $this->mock->setRosterUserGroup('user', 'contact', ['group']);
+        $this->mock->setGroupForUserRoster('user', 'contact', ['group']);
     }
 
     public function testSendStanza()
