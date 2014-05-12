@@ -79,12 +79,12 @@ trait RosterTrait
     }
 
     /**
-     * Add an entry in a user's roster.
+     * Add an item to a user's roster (supports ODBC).
      *
      * Subs is the state of the roster item subscription. It can be either `both`, `to`, `from` or `none`. `None` means
      * that presence packets are not send between parties. `Both` means that presence packets are send in both direction.
-     * `To` means that the user see the presence of the given JID. `From` means that the JID specified sees the user
-     * presence.
+     * `To` means that the user see the presence of the given nickname. `From` means that the nickname specified sees the
+     * user presence.
      *
      * Do not forget that roster items should be kept symmetric: when adding a roster item for a user, you have to do
      * the symmetric roster item addition.
@@ -112,7 +112,7 @@ trait RosterTrait
     }
 
     /**
-     * Remove an entry for a user roster.
+     * Delete an item from a user's roster (supports ODBC).
      *
      * Do not forget that roster items should be kept symmetric: when removing a roster item for a user, you have to do
      * the symmetric roster item removal. This mechanism bypass the standard roster approval addition mechanism and
