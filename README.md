@@ -57,7 +57,7 @@ Basic usage looks like this:
         'debug' => false,
     ]);
 
-    //Create new user with name `Ivan` and password `someStrongPassword`
+    //Create 2 new users with name `Ivan` and `Petr` with password `someStrongPassword`
     $rpc->createUser('Ivan', 'someStrongPassword');
     $rpc->createUser('Petr', 'someStrongPassword');
 

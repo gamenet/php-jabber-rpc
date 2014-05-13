@@ -352,12 +352,13 @@ trait UserTrait
     }
 
     /**
-     * Set roster user owner
+     * Set groups for contact in roster user owner
+     *
      * @param string $user
      * @param string $contact
      * @param array $groups
      */
-    public function setRosterUserGroup($user, $contact, array $groups)
+    public function setGroupForUserRoster($user, $contact, array $groups)
     {
         $jid = "$contact@$this->host";
         $group = '';
