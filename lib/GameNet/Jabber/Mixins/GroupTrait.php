@@ -41,6 +41,8 @@ namespace GameNet\Jabber\Mixins;
  */
 trait GroupTrait
 {
+    abstract protected function sendRequest($command, array $params);
+
     /**
      * Create a Shared Roster Group.
      *

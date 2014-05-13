@@ -41,6 +41,8 @@ namespace GameNet\Jabber\Mixins;
  */
 trait RosterTrait
 {
+    abstract protected function sendRequest($command, array $params);
+
     /**
      * Retrieve the roster for a given user. Returns a list of the contacts in a user roster. It also returns the state
      * of the contact subscription. Subscription can be either "none", "from", "to", "both". Pending can be "in", "out"

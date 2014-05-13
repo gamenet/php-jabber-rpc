@@ -42,6 +42,8 @@ namespace GameNet\Jabber\Mixins;
  */
 trait UserTrait
 {
+    abstract protected function sendRequest($command, array $params);
+
     /**
      * Create an ejabberd user account.
      *

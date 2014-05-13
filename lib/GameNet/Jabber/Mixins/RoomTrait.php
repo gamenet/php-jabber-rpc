@@ -41,6 +41,8 @@ namespace GameNet\Jabber\Mixins;
  */
 trait RoomTrait
 {
+    abstract protected function sendRequest($command, array $params);
+
     /**
      * Create a MUC room name@service in host.
      *
