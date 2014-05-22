@@ -359,15 +359,15 @@ trait UserTrait
     public function setGroupForUserRoster($user, $contact, array $groups)
     {
         $jid = "$contact@$this->host";
-        $group = '';
+        $groupList = '';
         foreach ($groups as $group) {
-            $group .= "<group>$group</group>";
+            $groupList .= "<group>$group</group>";
         }
 
         $stanza = "
             <iq type=\"set\" id=\"ab48a\">
                 <query xmlns=\"jabber:iq:roster\">
-                    <item jid=\"$jid\">$group</item>
+                    <item jid=\"$jid\">$groupList</item>
                 </query>
             </iq>";
 
