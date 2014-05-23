@@ -339,6 +339,7 @@ trait UserTrait
     {
         $sessions = $this->userSessionsInfo($user);
         foreach ($sessions as $session) {
+            $stanza = str_replace('{resource}', $session['resource'], $stanza);
             $this->sendRequest(
                 'send_stanza_c2s',
                 [
@@ -360,16 +361,18 @@ trait UserTrait
      */
     public function setGroupForUserRoster($user, $contact, array $groups)
     {
-        $jid = "$contact@$this->host";
+        $id = uniqid();
+        $userJid = "$user@$this->host";
+        $contactJid = "$contact@$this->host";
         $groupList = '';
         foreach ($groups as $group) {
             $groupList .= "<group>$group</group>";
         }
 
         $stanza = "
-            <iq type=\"set\" id=\"ab48a\">
+            <iq from=\"$userJid/{resource}\" type=\"set\" id=\"$id\">
                 <query xmlns=\"jabber:iq:roster\">
-                    <item jid=\"$jid\">$groupList</item>
+                    <item jid=\"$contactJid\">$groupList</item>
                 </query>
             </iq>";
 
