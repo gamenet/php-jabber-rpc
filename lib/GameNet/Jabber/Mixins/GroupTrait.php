@@ -49,8 +49,9 @@ trait GroupTrait
      * @param string $groupId
      * @param string $name
      * @param string $description
+     * @param array $display
      */
-    function createSharedRosterGroup($groupId, $name, $description = '')
+    function createSharedRosterGroup($groupId, $name, $description = '', array $display = [])
     {
         $this->sendRequest(
             'srg_create',
@@ -59,6 +60,7 @@ trait GroupTrait
                 'group'       => (string) $groupId,
                 'name'        => $name,
                 'description' => $description,
+                'display'     => join("\\n", $display),
             ]
         );
     }
@@ -168,5 +170,34 @@ trait GroupTrait
         }
 
         return $sharedGroups;
+    }
+
+    /**
+     * @param string $groupId
+     *
+     * @return array ['name' => '...', 'description' => '...', 'displayed_groups' => ['...', '...']]
+     */
+    public function getInfoSharedRosterGroup($groupId)
+    {
+        $response = $this->sendRequest(
+            'srg_get_info',
+            [
+                'host'  => $this->host,
+                'group' => $groupId,
+            ]
+        );
+
+        if (!isset($response['informations']) || empty($response['informations'])) {
+            return [];
+        }
+
+        $info = [];
+        foreach ($response['informations'] as $element) {
+            $key = $element['information'][0]['key'];
+            $value = str_replace(['[', ']', '<<"', '">>'], '', $element['information'][1]['value']);
+            $info[$key] = ($key === 'displayed_groups') ? explode(',', $value) : $value;
+        }
+
+        return $info;
     }
 } 

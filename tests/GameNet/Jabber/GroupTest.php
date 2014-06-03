@@ -72,5 +72,14 @@ class GroupTest extends  PHPUnit_Framework_TestCase
 
         $this->mock->listSharedRosterGroups();
     }
+
+    public function testGetInfoSharedRosterGroup()
+    {
+        $this->mock->expects($this->once())
+            ->method('sendRequest')
+            ->with($this->equalTo('srg_get_info'));
+
+        $this->mock->getInfoSharedRosterGroup('groupId');
+    }
 }
  
