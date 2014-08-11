@@ -60,7 +60,7 @@ trait GroupTrait
                 'group'       => (string) $groupId,
                 'name'        => $name,
                 'description' => $description,
-                'display'     => join("\\n", $display),
+                'display'     => join("\\n", array_merge([$groupId], $display)),
             ]
         );
     }
