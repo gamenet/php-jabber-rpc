@@ -353,6 +353,34 @@ trait UserTrait
     }
 
     /**
+     * Set groups for contact in roster user owner
+     *
+     * @deprecated
+     * @param string $user
+     * @param string $contact
+     * @param array $groups
+     */
+    public function setGroupForUserRoster($user, $contact, array $groups)
+    {
+        $id = uniqid();
+        $userJid = "$user@$this->host";
+        $contactJid = "$contact@$this->host";
+        $groupList = '';
+        foreach ($groups as $group) {
+            $groupList .= "<group>$group</group>";
+        }
+
+        $stanza = "
+            <iq from=\"$userJid/{resource}\" type=\"set\" id=\"$id\">
+                <query xmlns=\"jabber:iq:roster\">
+                    <item jid=\"$contactJid\">$groupList</item>
+                </query>
+            </iq>";
+
+        $this->sendStanzaC2S($user, $stanza);
+    }
+
+    /**
      * Add jid to a group in a user's roster (supports ODBC)
      *
      * WARNING!

@@ -145,6 +145,14 @@ class UserTest extends  PHPUnit_Framework_TestCase
         $this->mock->banAccount('user', 'reason');
     }
 
+    public function testSetGroupForUserRoster()
+    {
+        $this->mock->expects($this->once())
+            ->method('sendRequest');
+
+        $this->mock->setGroupForUserRoster('user', 'contact', ['group']);
+    }
+
     public function testSendStanza()
     {
         $this->mock->expects($this->once())
