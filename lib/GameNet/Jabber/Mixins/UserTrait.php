@@ -353,53 +353,29 @@ trait UserTrait
     }
 
     /**
-     * Add jid to a group in a user's roster (supports ODBC)
+     * Set groups for contact in roster user owner
      *
-     * WARNING!
-     * This method uses commands that are not available in the basic version eJabberd
-     * These commands are available in the branch version https://github.com/gamenet/ejabberd
-     * See request to add features - https://github.com/gamenet/ejabberd/pull/11
-     *
-     * @param $user
-     * @param $contact
-     * @param $group
+     * @param string $user
+     * @param string $contact
+     * @param array $groups
      */
-    public function addUserToGroup($user, $contact, $group)
+    public function setGroupForUserRoster($user, $contact, array $groups)
     {
-        $this->sendRequest(
-            'add_jid_to_group',
-            [
-                'localserver' => $this->host,
-                'localuser'   => $user,
-                'jid'         => "$contact@$this->host",
-                'group'       => $group,
-            ]
-        );
-    }
+        $id = uniqid();
+        $userJid = "$user@$this->host";
+        $contactJid = "$contact@$this->host";
+        $groupList = '';
+        foreach ($groups as $group) {
+            $groupList .= "<group>$group</group>";
+        }
 
-    /**
-     * Delete a jid from a user's roster group (supports ODBC)
-     *
-     * WARNING!
-     * This method uses commands that are not available in the basic version eJabberd
-     * These commands are available in the branch version https://github.com/gamenet/ejabberd
-     * See request to add features - https://github.com/gamenet/ejabberd/pull/11
-     *
-     *
-     * @param $user
-     * @param $contact
-     * @param $group
-     */
-    public function deleteUserFromGroup($user, $contact, $group)
-    {
-        $this->sendRequest(
-            'delete_jid_from_group',
-            [
-                'localserver' => $this->host,
-                'localuser'   => $user,
-                'jid'         => "$contact@$this->host",
-                'group'       => $group,
-            ]
-        );
+        $stanza = "
+            <iq from=\"$userJid/{resource}\" type=\"set\" id=\"$id\">
+                <query xmlns=\"jabber:iq:roster\">
+                    <item jid=\"$contactJid\">$groupList</item>
+                </query>
+            </iq>";
+
+        $this->sendStanzaC2S($user, $stanza);
     }
 }
