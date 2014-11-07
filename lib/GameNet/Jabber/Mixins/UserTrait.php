@@ -423,10 +423,11 @@ trait UserTrait
         $this->sendRequest(
             'delete_jid_from_group',
             [
-                'localserver' => $this->host,
-                'localuser'   => $user,
-                'jid'         => "$contact@$this->host",
-                'group'       => $group,
+                'localserver'  => $this->host,
+                'localuser'    => $user,
+                'jid'          => "$contact@$this->host",
+                'group'        => $group,
+                'deleteroster' => "false",
             ]
         );
     }
