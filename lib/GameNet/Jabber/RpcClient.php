@@ -76,7 +76,7 @@ class RpcClient
 
     protected function sendRequest($command, array $params)
     {
-        $request = xmlrpc_encode_request($command, $params, ['encoding' => 'utf-8']);
+        $request = xmlrpc_encode_request($command, $params, ['encoding' => 'utf-8', 'escaping' => 'markup']);
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->server);
