@@ -431,4 +431,14 @@ trait UserTrait
             ]
         );
     }
+
+    /**
+     * Get list of connected users
+     *
+     * @return string
+     */
+    public function getConnectedUsers()
+    {
+        return $this->sendRequest('connected_users', []);
+    }
 }

@@ -55,9 +55,22 @@ class RpcClient
     const VCARD_DESCRIPTION = 'DESC';
     const VCARD_AVATAR_URL = 'EXTRA PHOTOURL';
 
+    /**
+     * @var string
+     */
     protected $server;
-
+    /**
+     * @var string
+     */
     protected $host;
+    /**
+     * @var bool
+     */
+    protected $debug;
+    /**
+     * @var int
+     */
+    protected $timeout;
 
     public function __construct(array $options)
     {
@@ -72,6 +85,7 @@ class RpcClient
         $this->server = $options['server'];
         $this->host = $options['host'];
         $this->debug = isset($options['debug']) ? (bool)$options['debug'] : false;
+        $this->timeout = isset($options['timeout']) ? (int)$options['timeout'] : 5;
     }
 
     protected function sendRequest($command, array $params)
@@ -83,7 +97,7 @@ class RpcClient
         curl_setopt($ch, CURLOPT_FAILONERROR, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
@@ -103,4 +117,3 @@ class RpcClient
         return $xml;
     }
 }
- 

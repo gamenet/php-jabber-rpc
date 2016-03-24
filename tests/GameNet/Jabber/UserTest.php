@@ -176,5 +176,13 @@ class UserTest extends  PHPUnit_Framework_TestCase
 
         $this->mock->deleteUserFromGroup('user', 'contact', 'group');
     }
+
+    public function testGetConnectedUsers()
+    {
+        $this->mock->expects($this->once())
+            ->method('sendRequest');
+
+        $this->mock->getConnectedUsers();
+    }
 }
  
