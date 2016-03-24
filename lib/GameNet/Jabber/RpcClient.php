@@ -88,6 +88,26 @@ class RpcClient
         $this->timeout = isset($options['timeout']) ? (int)$options['timeout'] : 5;
     }
 
+    /**
+     * @param int $timeout
+     */
+    public function setTimeout($timeout)
+    {
+        if (!is_int($timeout) || $timeout < 0) {
+            throw new \InvalidArgumentException('Timeout value must be integer');
+        }
+
+        $this->timeout = $timeout;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
+    }
+
     protected function sendRequest($command, array $params)
     {
         $request = xmlrpc_encode_request($command, $params, ['encoding' => 'utf-8', 'escaping' => 'markup']);
