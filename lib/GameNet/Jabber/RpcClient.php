@@ -71,6 +71,14 @@ class RpcClient
      * @var int
      */
     protected $timeout;
+    /**
+     * @var string
+     */
+    protected $username;
+    /**
+     * @var string
+     */
+    protected $password;
 
     public function __construct(array $options)
     {
@@ -84,8 +92,17 @@ class RpcClient
 
         $this->server = $options['server'];
         $this->host = $options['host'];
+        $this->username = isset($options['username']) ? $options['username'] : '';
+        $this->password = isset($options['password']) ? $options['password'] : '';
         $this->debug = isset($options['debug']) ? (bool)$options['debug'] : false;
         $this->timeout = isset($options['timeout']) ? (int)$options['timeout'] : 5;
+
+        if ($this->username && !$this->password) {
+            throw new \InvalidArgumentException("Password cannot be empty if username was defined");
+        }
+        if (!$this->username && $this->password) {
+            throw new \InvalidArgumentException("Username cannot be empty if password was defined");
+        }
     }
 
     /**
@@ -118,10 +135,17 @@ class RpcClient
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
-        curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['User-Agent: GameNet', 'Content-Type: text/xml']);
+
+        if ($this->username && $this->password) {
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_USERPWD, "$this->username:$this->password");
+        } else {
+            curl_setopt($ch, CURLOPT_HEADER, false);
+        }
+
         $response = curl_exec($ch);
         curl_close($ch);
 

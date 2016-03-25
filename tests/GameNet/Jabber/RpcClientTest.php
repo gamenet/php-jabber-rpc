@@ -37,8 +37,25 @@ class RpcClientTest extends  PHPUnit_Framework_TestCase
         $this->assertEquals(600, $client->getTimeout());
     }
 
-    private function getClient()
+    /**
+     * @dataProvider invalidCredentials
+     * @expectedException InvalidArgumentException
+     */
+    public function testInvalidCredentials($username, $password)
     {
-        return new RpcClient(['server' => 'test', 'host' => 'test']);
+        $this->getClient(['username' => $username, 'password' => $password]);
+    }
+
+    public function invalidCredentials()
+    {
+        return [
+            ['username' => 'username', 'password' => ''],
+            ['username' => '', 'password' => 'password'],
+        ];
+    }
+
+    private function getClient(array $options = [])
+    {
+        return new RpcClient(['server' => 'test', 'host' => 'test'] + $options);
     }
 }
