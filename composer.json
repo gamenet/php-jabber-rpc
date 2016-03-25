@@ -16,7 +16,8 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "phpxmlrpc/phpxmlrpc": "~4.0"
     },
     "require-dev": {
         "phpunit/phpunit": ">=4.0.0"

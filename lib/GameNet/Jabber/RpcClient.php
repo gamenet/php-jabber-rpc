@@ -55,6 +55,8 @@ class RpcClient
     const VCARD_DESCRIPTION = 'DESC';
     const VCARD_AVATAR_URL = 'EXTRA PHOTOURL';
 
+    const RESPONSE_MAX_LENGTH = 10000000;
+
     /**
      * @var string
      */
@@ -149,9 +151,15 @@ class RpcClient
         $response = curl_exec($ch);
         curl_close($ch);
 
-        $xml = xmlrpc_decode($response);
-        if (!$xml || xmlrpc_is_fault($xml)) {
-            throw new \RuntimeException("Error execution command '$command'' with parameters " . var_export($params, true) . ". Response: $response");
+        // INFO: We must use a custom parser instead xmlrpc_decode if the answer is longer than 10000000 bytes
+        if (strlen($response) > self::RESPONSE_MAX_LENGTH) {
+            $xml = \php_xmlrpc_decode($response);
+        } else {
+            $xml = \xmlrpc_decode($response);
+        }
+
+        if (!$xml || \xmlrpc_is_fault($xml)) {
+            throw new \RuntimeException("Error execution command '$command'' with parameters " . var_export($params, true) . ". Response: ");
         }
 
         if ($this->debug) {
