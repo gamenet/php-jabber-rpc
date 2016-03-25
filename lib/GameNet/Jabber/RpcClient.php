@@ -129,6 +129,12 @@ class RpcClient
 
     protected function sendRequest($command, array $params)
     {
+        if ($this->username && $this->password) {
+            $params = [
+                ['user' => $this->username, 'server' => $this->server, 'password' => $this->password], $params
+            ];
+        }
+
         $request = xmlrpc_encode_request($command, $params, ['encoding' => 'utf-8', 'escaping' => 'markup']);
 
         $ch = curl_init();
@@ -137,16 +143,10 @@ class RpcClient
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['User-Agent: GameNet', 'Content-Type: text/xml']);
-
-        if ($this->username && $this->password) {
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_setopt($ch, CURLOPT_USERPWD, "$this->username:$this->password");
-        } else {
-            curl_setopt($ch, CURLOPT_HEADER, false);
-        }
 
         $response = curl_exec($ch);
         curl_close($ch);
