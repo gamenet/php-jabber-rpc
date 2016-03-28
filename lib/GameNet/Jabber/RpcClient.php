@@ -33,6 +33,9 @@ namespace GameNet\Jabber;
 
 use fXmlRpc\Client;
 use fXmlRpc\Serializer\NativeSerializer;
+use fXmlRpc\Transport\HttpAdapterTransport;
+use Ivory\HttpAdapter\CurlHttpAdapter;
+use Ivory\HttpAdapter\Configuration;
 
 /**
  * Class RpcClient
@@ -71,6 +74,10 @@ class RpcClient
      */
     protected $debug;
     /**
+     * @var int
+     */
+    protected $timeout;
+    /**
      * @var string
      */
     protected $username;
@@ -94,6 +101,7 @@ class RpcClient
         $this->username = isset($options['username']) ? $options['username'] : '';
         $this->password = isset($options['password']) ? $options['password'] : '';
         $this->debug = isset($options['debug']) ? (bool)$options['debug'] : false;
+        $this->timeout = isset($options['timeout']) ? (int)$options['timeout'] : 5;
 
         if ($this->username && !$this->password) {
             throw new \InvalidArgumentException("Password cannot be empty if username was defined");
@@ -103,9 +111,33 @@ class RpcClient
         }
     }
 
+    /**
+     * @param int $timeout
+     */
+    public function setTimeout($timeout)
+    {
+        if (!is_int($timeout) || $timeout < 0) {
+            throw new \InvalidArgumentException('Timeout value must be integer');
+        }
+
+        $this->timeout = $timeout;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
+    }
+
     protected function sendRequest($command, array $params)
     {
-        $client = new Client($this->server, null, null, new NativeSerializer());
+        $config = new Configuration();
+        $config->setTimeout($this->getTimeout());
+
+        $transport = new HttpAdapterTransport(new CurlHttpAdapter($config));
+        $client = new Client($this->server, $transport, null, new NativeSerializer());
 
         if ($this->username && $this->password) {
             $params = [
