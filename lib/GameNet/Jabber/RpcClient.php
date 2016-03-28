@@ -135,6 +135,7 @@ class RpcClient
     {
         $config = new Configuration();
         $config->setTimeout($this->getTimeout());
+        $config->setUserAgent('GameNet');
 
         $transport = new HttpAdapterTransport(new CurlHttpAdapter($config));
         $client = new Client($this->server, $transport, null, new NativeSerializer());
@@ -145,7 +146,11 @@ class RpcClient
             ];
         }
 
-        $result = $client->call($command, $params);
+        try {
+            $result = $client->call($command, $params);
+        } catch (\fXmlRpc\Exception\RuntimeException $e) {
+            throw new \RuntimeException($e->getMessage());
+        }
 
         if ($this->debug) {
             var_dump($command, $client->getPrependParams(), $client->getAppendParams(), $result);
