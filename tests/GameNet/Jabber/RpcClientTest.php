@@ -13,31 +13,6 @@ use GameNet\Jabber\RpcClient;
 class RpcClientTest extends  PHPUnit_Framework_TestCase
 {
     /**
-     * @dataProvider invalidTimeoutValues
-     * @expectedException \InvalidArgumentException
-     */
-    public function testInvalidTimeoutValue($value)
-    {
-        $this->getClient()->setTimeout($value);
-    }
-
-    public function invalidTimeoutValues()
-    {
-        return [
-            ['1'],
-            [-1],
-            [[]],
-        ];
-    }
-
-    public function testSetGetTimeout()
-    {
-        $client = $this->getClient();
-        $client->setTimeout(600);
-        $this->assertEquals(600, $client->getTimeout());
-    }
-
-    /**
      * @dataProvider invalidCredentials
      * @expectedException InvalidArgumentException
      */

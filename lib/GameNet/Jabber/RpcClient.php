@@ -31,6 +31,9 @@
  */
 namespace GameNet\Jabber;
 
+use fXmlRpc\Client;
+use fXmlRpc\Serializer\NativeSerializer;
+
 /**
  * Class RpcClient
  *
@@ -55,8 +58,6 @@ class RpcClient
     const VCARD_DESCRIPTION = 'DESC';
     const VCARD_AVATAR_URL = 'EXTRA PHOTOURL';
 
-    const RESPONSE_MAX_LENGTH = 10000000;
-
     /**
      * @var string
      */
@@ -69,10 +70,6 @@ class RpcClient
      * @var bool
      */
     protected $debug;
-    /**
-     * @var int
-     */
-    protected $timeout;
     /**
      * @var string
      */
@@ -97,7 +94,6 @@ class RpcClient
         $this->username = isset($options['username']) ? $options['username'] : '';
         $this->password = isset($options['password']) ? $options['password'] : '';
         $this->debug = isset($options['debug']) ? (bool)$options['debug'] : false;
-        $this->timeout = isset($options['timeout']) ? (int)$options['timeout'] : 5;
 
         if ($this->username && !$this->password) {
             throw new \InvalidArgumentException("Password cannot be empty if username was defined");
@@ -107,65 +103,22 @@ class RpcClient
         }
     }
 
-    /**
-     * @param int $timeout
-     */
-    public function setTimeout($timeout)
-    {
-        if (!is_int($timeout) || $timeout < 0) {
-            throw new \InvalidArgumentException('Timeout value must be integer');
-        }
-
-        $this->timeout = $timeout;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimeout()
-    {
-        return $this->timeout;
-    }
-
     protected function sendRequest($command, array $params)
     {
+        $client = new Client($this->server, null, null, new NativeSerializer());
+
         if ($this->username && $this->password) {
             $params = [
                 ['user' => $this->username, 'server' => $this->server, 'password' => $this->password], $params
             ];
         }
 
-        $request = xmlrpc_encode_request($command, $params, ['encoding' => 'utf-8', 'escaping' => 'markup']);
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->server);
-        curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['User-Agent: GameNet', 'Content-Type: text/xml']);
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        // INFO: We must use a custom parser instead xmlrpc_decode if the answer is longer than 10000000 bytes
-        if (strlen($response) > self::RESPONSE_MAX_LENGTH) {
-            $xml = \php_xmlrpc_decode($response);
-        } else {
-            $xml = \xmlrpc_decode($response);
-        }
-
-        if (!$xml || \xmlrpc_is_fault($xml)) {
-            throw new \RuntimeException("Error execution command '$command'' with parameters " . var_export($params, true) . ". Response: ");
-        }
+        $result = $client->call($command, $params);
 
         if ($this->debug) {
-            var_dump($command, $params, $response);
+            var_dump($command, $client->getPrependParams(), $client->getAppendParams(), $result);
         }
 
-        return $xml;
+        return $result;
     }
 }
