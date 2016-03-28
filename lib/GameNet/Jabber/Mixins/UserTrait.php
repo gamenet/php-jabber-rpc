@@ -439,6 +439,8 @@ trait UserTrait
      */
     public function getConnectedUsers()
     {
-        return $this->sendRequest('connected_users', []);
+        $users = $this->sendRequest('connected_users', []);
+
+        return isset($users['connected_users']) ? $users['connected_users'] : [];
     }
 }

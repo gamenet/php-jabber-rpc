@@ -31,6 +31,12 @@
  */
 namespace GameNet\Jabber;
 
+use fXmlRpc\Client;
+use fXmlRpc\Serializer\NativeSerializer;
+use fXmlRpc\Transport\HttpAdapterTransport;
+use Ivory\HttpAdapter\CurlHttpAdapter;
+use Ivory\HttpAdapter\Configuration;
+
 /**
  * Class RpcClient
  *
@@ -127,37 +133,29 @@ class RpcClient
 
     protected function sendRequest($command, array $params)
     {
+        $config = new Configuration();
+        $config->setTimeout($this->getTimeout());
+        $config->setUserAgent('GameNet');
+
+        $transport = new HttpAdapterTransport(new CurlHttpAdapter($config));
+        $client = new Client($this->server, $transport, null, new NativeSerializer());
+
         if ($this->username && $this->password) {
             $params = [
                 ['user' => $this->username, 'server' => $this->server, 'password' => $this->password], $params
             ];
         }
 
-        $request = xmlrpc_encode_request($command, $params, ['encoding' => 'utf-8', 'escaping' => 'markup']);
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->server);
-        curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['User-Agent: GameNet', 'Content-Type: text/xml']);
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        $xml = xmlrpc_decode($response);
-        if (!$xml || xmlrpc_is_fault($xml)) {
-            throw new \RuntimeException("Error execution command '$command'' with parameters " . var_export($params, true) . ". Response: $response");
+        try {
+            $result = $client->call($command, $params);
+        } catch (\fXmlRpc\Exception\RuntimeException $e) {
+            throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
 
         if ($this->debug) {
-            var_dump($command, $params, $response);
+            var_dump($command, $client->getPrependParams(), $client->getAppendParams(), $result);
         }
 
-        return $xml;
+        return $result;
     }
 }
