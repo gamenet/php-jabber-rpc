@@ -149,7 +149,7 @@ class RpcClient
         try {
             $result = $client->call($command, $params);
         } catch (\fXmlRpc\Exception\RuntimeException $e) {
-            throw new \RuntimeException($e->getMessage());
+            throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
 
         if ($this->debug) {
