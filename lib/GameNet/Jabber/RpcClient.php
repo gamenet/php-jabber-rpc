@@ -34,8 +34,9 @@ namespace GameNet\Jabber;
 use fXmlRpc\Client;
 use fXmlRpc\Serializer\NativeSerializer;
 use fXmlRpc\Transport\HttpAdapterTransport;
-use Ivory\HttpAdapter\CurlHttpAdapter;
-use Ivory\HttpAdapter\Configuration;
+use Http\Client\Curl;
+use Http\Message\MessageFactory\DiactorosMessageFactory;
+use Http\Message\StreamFactory\DiactorosStreamFactory;
 
 /**
  * Class RpcClient
@@ -133,11 +134,12 @@ class RpcClient
 
     protected function sendRequest($command, array $params)
     {
-        $config = new Configuration();
-        $config->setTimeout($this->getTimeout());
-        $config->setUserAgent('GameNet');
-
-        $transport = new HttpAdapterTransport(new CurlHttpAdapter($config));
+        $options = [
+            CURLOPT_USERAGENT => $this->getTimeout(),
+            CURLOPT_SSL_VERIFYPEER => 'GameNet',
+        ];
+        $httpClient = new Curl\Client(new DiactorosMessageFactory(), new DiactorosStreamFactory(), $options);
+        $transport = new HttpAdapterTransport(new DiactorosMessageFactory(), $httpClient);
         $client = new Client($this->server, $transport, null, new NativeSerializer());
 
         if ($this->username && $this->password) {
