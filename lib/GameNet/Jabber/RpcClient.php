@@ -31,12 +31,7 @@
  */
 namespace GameNet\Jabber;
 
-use fXmlRpc\Client;
-use fXmlRpc\Serializer\NativeSerializer;
-use fXmlRpc\Transport\HttpAdapterTransport;
-use Http\Client\Curl;
-use Http\Message\MessageFactory\DiactorosMessageFactory;
-use Http\Message\StreamFactory\DiactorosStreamFactory;
+use Comodojo\Xmlrpc\XmlrpcDecoder;
 
 /**
  * Class RpcClient
@@ -62,6 +57,8 @@ class RpcClient
     const VCARD_DESCRIPTION = 'DESC';
     const VCARD_AVATAR_URL = 'EXTRA PHOTOURL';
 
+    const RESPONSE_MAX_LENGTH = 10000000;
+
     /**
      * @var string
      */
@@ -86,6 +83,10 @@ class RpcClient
      * @var string
      */
     protected $password;
+    /**
+     * @var string
+     */
+    protected $userAgent;
 
     public function __construct(array $options)
     {
@@ -103,6 +104,7 @@ class RpcClient
         $this->password = isset($options['password']) ? $options['password'] : '';
         $this->debug = isset($options['debug']) ? (bool)$options['debug'] : false;
         $this->timeout = isset($options['timeout']) ? (int)$options['timeout'] : 5;
+        $this->userAgent = isset($options['userAgent']) ? $options['userAgent'] : 'GameNet';
 
         if ($this->username && !$this->password) {
             throw new \InvalidArgumentException("Password cannot be empty if username was defined");
@@ -114,6 +116,7 @@ class RpcClient
 
     /**
      * @param int $timeout
+     * @return $this
      */
     public function setTimeout($timeout)
     {
@@ -122,6 +125,8 @@ class RpcClient
         }
 
         $this->timeout = $timeout;
+
+        return $this;
     }
 
     /**
@@ -132,32 +137,56 @@ class RpcClient
         return $this->timeout;
     }
 
+    /**
+     * @param string $userAgent
+     * @return $this
+     */
+    public function setUserAgent($userAgent)
+    {
+        $this->userAgent = $userAgent;
+
+        return $this;
+    }
+
     protected function sendRequest($command, array $params)
     {
-        $options = [
-            CURLOPT_USERAGENT => $this->getTimeout(),
-            CURLOPT_SSL_VERIFYPEER => 'GameNet',
-        ];
-        $httpClient = new Curl\Client(new DiactorosMessageFactory(), new DiactorosStreamFactory(), $options);
-        $transport = new HttpAdapterTransport(new DiactorosMessageFactory(), $httpClient);
-        $client = new Client($this->server, $transport, null, new NativeSerializer());
-
         if ($this->username && $this->password) {
             $params = [
                 ['user' => $this->username, 'server' => $this->server, 'password' => $this->password], $params
             ];
         }
 
-        try {
-            $result = $client->call($command, $params);
-        } catch (\fXmlRpc\Exception\RuntimeException $e) {
-            throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+        $request = xmlrpc_encode_request($command, $params, ['encoding' => 'utf-8', 'escaping' => 'markup']);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->server);
+        curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['User-Agent: ' . $this->userAgent, 'Content-Type: text/xml']);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        // INFO: We must use a custom parser instead xmlrpc_decode if the answer is longer than 10000000 bytes
+        if (strlen($response) > self::RESPONSE_MAX_LENGTH) {
+            $xml = (new XmlrpcDecoder)->decodeResponse($response);
+        } else {
+            $xml = \xmlrpc_decode($response);
+        }
+
+        if (!$xml || \xmlrpc_is_fault($xml)) {
+            throw new \RuntimeException("Error execution command '$command'' with parameters " . var_export($params, true) . ". Response: ");
         }
 
         if ($this->debug) {
-            var_dump($command, $client->getPrependParams(), $client->getAppendParams(), $result);
+            var_dump($command, $params, $response);
         }
 
-        return $result;
+        return $xml;
     }
 }
