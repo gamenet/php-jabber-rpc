@@ -75,7 +75,8 @@ trait RoomTrait
         $this->sendRequest(
             'send_direct_invitation',
             [
-                'room'     => $name . '@conference.' . $this->host,
+                'name'     => $name,
+                'service'  => 'conference.' . $this->host,
                 'password' => $password,
                 'reason'   => $reason,
                 'users'    => join(':', $users),
